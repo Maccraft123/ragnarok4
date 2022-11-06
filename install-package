@@ -1,0 +1,29 @@
+#!/bin/bash
+set -ex
+
+PACKAGEROOT="$RAGNAROOT/packages/"
+PACKAGE="$1"
+
+export PACKAGEDIR="$PACKAGEROOT/$PACKAGE"
+export SRCDIR="$RAGNAROOT/tmp/pkgs/$PACKAGE"
+
+if [[ ! -e "$PACKAGEDIR" ]]; then
+	echo "$PACKAGE does not exist"
+	exit 1
+fi
+
+source "$PACKAGEDIR/info"
+source "$RAGNAROOT/data/arches"
+
+cd "$SRCDIR"
+
+case "$TYPE" in
+	cargo)
+		for srv in $INSTALL_SERVICES; do
+			install -Dm755 "$SRCDIR/target/$RUSTTARGET/release/$srv" "$ROOTDIR/bin/srv/"
+		done
+		;;
+	*)
+		exit 1
+		;;
+esac

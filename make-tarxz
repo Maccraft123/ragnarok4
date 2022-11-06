@@ -1,0 +1,32 @@
+#!/bin/bash
+set -ex
+
+if [[ -z "$ARCH" ]]; then
+	echo "Set ARCH env var"
+	echo "Valid values: arm64"
+	exit 1
+fi
+
+export RAGNAROOT="$(dirname $(realpath $0))"
+
+mkdir -p "$RAGNAROOT/tmp"
+
+if [[ -e "$RAGNAROOT/tmp/root" ]]; then
+	rm -rf "$RAGNAROOT/tmp/root"
+fi
+
+mkdir -p "$RAGNAROOT/tmp/root"
+mkdir -p "$RAGNAROOT/tmp/pkgs"
+
+export ROOTDIR="$RAGNAROOT/tmp/root"
+
+mkdir "$ROOTDIR/bin"
+mkdir "$ROOTDIR/bin/srv"
+mkdir "$ROOTDIR/etc"
+
+for x in $(ls packages); do
+	"$RAGNAROOT/make-package" "$x"
+	"$RAGNAROOT/install-package" "$x"
+done
+
+(cd $ROOTDIR; tar cJf "$RAGNAROOT/tmp/rootfs.tar.xz" "./")

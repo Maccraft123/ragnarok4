@@ -1,0 +1,7 @@
+SOURCE="git"
+GIT_REPO="https://github.com/R-ARM/rsystem.git"
+
+TYPE="cargo"
+
+INSTALL_SERVICES="rinit rinputer4"
+

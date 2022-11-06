@@ -1,0 +1,10 @@
+#!/bin/false
+case "$ARCH" in
+	arm64)
+		export RUSTTARGET="aarch64-unknown-linux-musl"
+		export CARGOFLAGS="--config target.aarch64-unknown-linux-musl.linker=\"aarch64-linux-gnu-gcc\""
+		;;
+	*)
+		echo "$ARCH is Invalid value for ARCH"
+		exit 1
+esac

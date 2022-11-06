@@ -1,0 +1,42 @@
+#!/bin/bash
+set -ex
+
+PACKAGEROOT="$RAGNAROOT/packages/"
+PACKAGE="$1"
+
+export PACKAGEDIR="$PACKAGEROOT/$PACKAGE"
+export SRCDIR="$RAGNAROOT/tmp/pkgs/$PACKAGE"
+
+if [[ ! -e "$PACKAGEDIR" ]]; then
+	echo "$PACKAGE does not exist"
+	exit 1
+fi
+
+source "$PACKAGEDIR/info"
+
+case "$SOURCE" in
+	git)
+		if [[ -e "$SRCDIR" ]]; then
+			git -C "$SRCDIR" pull
+		else
+			git clone "$GIT_REPO" "$SRCDIR"
+		fi
+		;;
+	*)
+		echo "$SOURCE is invalid value for SOURCE"
+		exit 1
+		;;
+esac
+
+source "$RAGNAROOT/data/arches"
+
+cd "$SRCDIR"
+
+case "$TYPE" in
+	cargo)
+		cargo build --release --target $RUSTTARGET $CARGOFLAGS
+		;;
+	*)
+		exit 1
+		;;
+esac
